@@ -5,14 +5,10 @@
 <script>
 export default {
   name: "app",
-  mounted() {
-    this.$storage.setItem("info", { name: "zhaopeng", age: 27 });
-    // console.log("info=>", this.$storage.getItem("info"));
-    // this.$storage.clearItem("age");
-    this.$storage.clearAll();
-  },
 };
 </script>
 
-<style>
+<style lang='scss'>
+@import "./assets/style/reset.css";
+@import "./assets/style/index.scss";
 </style>
