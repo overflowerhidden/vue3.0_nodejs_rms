@@ -17,11 +17,29 @@
 //   router.push("/welcome");
 // };
 //
-// </script>
+//
+</script>
 
 <script>
 export default {
   name: "Login",
+  mounted() {
+    // todo 请求方法1
+    this.$request({
+      method: "get",
+      url: "/login",
+      data: {
+        name: "jack",
+      },
+    }).then((res)=>{
+      console.log(res);
+    });
+
+    // todo 请求方法2
+    // this.$request.get("/login", { name: "jack" }).then((res) => {
+    //   console.log(res);
+    // });
+  },
   methods: {
     goHome() {
       this.$router.push("/welcome");
