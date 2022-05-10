@@ -45,6 +45,10 @@ function request(options) {
     options.params = options.data;
   }
 
+  if (typeof options.mock != 'undefined') {
+    config.mock = options.mock
+  }
+
   if (config.env === 'prod') {
     service.defaults.baseURL = config.baseApi;
   } else {
