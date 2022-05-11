@@ -5,7 +5,12 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   server: {
     host: 'localhost',
-    port: 8080 // 修改端口号
+    port: 8080, // 修改端口号
+    proxy: {
+      "/api": {
+        target: 'http://localhost:3000'
+      }
+    }
   },
   plugins: [vue()]
 })
