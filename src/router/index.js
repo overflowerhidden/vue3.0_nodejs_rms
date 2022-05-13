@@ -15,7 +15,7 @@ const routes = [
         name: 'welcome',
         path: '/welcome',
         meta: {
-          title: '欢迎来到玛卡巴卡的小推车'
+          title: '欢迎页'
         },
         component: () => import('../views/Welcome.vue'),
       }

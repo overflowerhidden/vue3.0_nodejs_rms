@@ -4,7 +4,7 @@
       <!-- 系统LOGO -->
       <div class="logo">
         <img src="../assets/SeeYou04.png" />
-        <span>See You</span>
+        <span v-if="!isCollapse">See You</span>
       </div>
       <!-- 导航菜单 -->
       <el-menu
@@ -20,7 +20,14 @@
     </div>
     <div :class="['content-right', isCollapse ? 'fold' : 'unfold']">
       <div class="nav-top">
-        <div class="bread">面包屑</div>
+        <div class="nav-left">
+          <div class="menu-fold" @click="toggle">
+            <el-icon><fold /></el-icon>
+          </div>
+          <div class="bread">
+            <BreadCrumb />
+          </div>
+        </div>
         <div class="user-info">
           <el-badge
             :is-dot="noticeCount > 0 ? true : false"
@@ -56,9 +63,10 @@
 
 <script>
 import TreeMenu from "./TreeMenu.vue";
+import BreadCrumb from "./BreadCrumb.vue";
 export default {
   name: "Home",
-  components: { TreeMenu },
+  components: { TreeMenu, BreadCrumb },
   data() {
     return {
       isCollapse: false,
@@ -113,6 +121,7 @@ export default {
     color: #fff;
     overflow-y: auto;
     transition: width 0.5s;
+    z-index: 10;
     .logo {
       display: flex;
       align-items: center;

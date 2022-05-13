@@ -9,14 +9,14 @@
       :index="menu.path"
     >
       <template #title>
-        <i :class="menu.icon"></i>
+        <el-icon class="el-input__icon"><setting /></el-icon>
         <span>{{ menu.menuName }}</span>
       </template>
       <tree-menu :userMenu="menu.children" />
     </el-sub-menu>
-    <el-menu-item v-else-if="menu.menuType == 1" :index="menu.path">{{
-      menu.menuName
-    }}</el-menu-item>
+    <el-menu-item v-else-if="menu.menuType == 1" :index="menu.path">
+      {{ menu.menuName }}
+    </el-menu-item>
   </template>
 </template>
 
