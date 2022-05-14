@@ -15,9 +15,16 @@ const routes = [
         name: 'welcome',
         path: '/welcome',
         meta: {
-          title: '欢迎页'
+          title: '欢迎来到SeeYou'
         },
-        component: () => import('../views/Welcome.vue'),
+        component: () => import('@/views/Welcome.vue'),
+      }, {
+        name: 'user',
+        path: '/system/user',
+        meta: {
+          title: '用户管理'
+        },
+        component: () => import('@/views/User.vue'),
       }
     ]
   },
