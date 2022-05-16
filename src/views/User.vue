@@ -136,6 +136,7 @@
 
 <script>
 import { getCurrentInstance, onMounted, reactive, ref, toRaw } from "vue";
+import utils from "./../utils/utils";
 export default {
   name: "user",
   setup() {
@@ -232,11 +233,17 @@ export default {
         label: "注册时间",
         prop: "createTime",
         width: 180,
+        formatter: (row, column, value) => {
+          return utils.formateDate(new Date(value));
+        },
       },
       {
         label: "最后登录时间",
         prop: "lastLoginTime",
         width: 180,
+        formatter: (row, column, value) => {
+          return utils.formateDate(new Date(value));
+        },
       },
     ]);
 
@@ -328,8 +335,9 @@ export default {
           params.userEmail += "@163.com";
           params.action = action.value;
           let res = await proxy.$api.userSubmit(params);
+          console.log(res);
           showModal.value = false;
-          proxy.$message.success("用户创建成功");
+          proxy.$message.success(res.msg);
           handleReset("dialogForm");
           getUserList();
         }
