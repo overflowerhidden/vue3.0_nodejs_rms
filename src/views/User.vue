@@ -335,7 +335,6 @@ export default {
           params.userEmail += "@163.com";
           params.action = action.value;
           let res = await proxy.$api.userSubmit(params);
-          console.log(res);
           showModal.value = false;
           proxy.$message.success(res.msg);
           handleReset("dialogForm");
