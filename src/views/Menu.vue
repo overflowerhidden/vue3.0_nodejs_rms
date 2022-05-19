@@ -40,8 +40,10 @@
             <el-button @click="handleAdd(2, scope.row)" type="primary"
               >新增</el-button
             >
-            <el-button>编辑</el-button>
-            <el-button type="danger">删除</el-button>
+            <el-button @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button type="danger" @click="handleDel(scope.row._id)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -231,6 +233,20 @@ export default {
           (item) => item
         );
       }
+    },
+    // 编辑
+    handleEdit(row) {
+      this.showModal = true;
+      this.action = "edit";
+      this.$nextTick(() => {
+        Object.assign(this.menuForm, row);
+      });
+    },
+    // 删除
+    async handleDel(_id) {
+      await this.$api.menuSubmit({ _id, action: "delete" });
+      this.$message.success("删除成功");
+      this.getMenuList();
     },
     // 菜单操作-提交
     handleSubmit() {
