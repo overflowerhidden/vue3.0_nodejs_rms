@@ -11,10 +11,7 @@
           </el-input>
         </el-form-item>
         <el-form-item prop="userPwd">
-          <el-input
-            type="password"
-            v-model="user.userPwd"
-          >
+          <el-input type="password" v-model="user.userPwd">
             <template #prefix>
               <el-icon class="el-input__icon"><key /></el-icon>
             </template>
@@ -31,6 +28,9 @@
 </template>
 
 <script>
+import storage from "./../utils/storage";
+import utils from "./../utils/utils";
+import { defineAsyncComponent } from "vue";
 export default {
   name: "Login",
   data() {
@@ -61,14 +61,32 @@ export default {
     login() {
       this.$refs.userForm.validate((valid) => {
         if (valid) {
-          this.$api.login(this.user).then((res) => {
+          this.$api.login(this.user).then(async (res) => {
             this.$store.commit("saveUserInfo", res);
+            await this.loadAsyncRoutes();
             this.$router.push("/welcome");
           });
         } else {
           return false;
         }
       });
+    },
+    async loadAsyncRoutes() {
+      let userInfo = storage.getItem("userInfo") || {};
+      if (userInfo.token) {
+        try {
+          const { menuList } = await this.$api.getPermissionList();
+          let routes = utils.generateRoute(menuList);
+          console.log(routes);
+          routes.map((route) => {
+            let url = `./../views/${route.component}.vue`;
+            route.component = defineAsyncComponent(() =>
+              import(/* @vite-ignore */ url)
+            );
+            this.$router.addRoute("home", route);
+          });
+        } catch (error) {}
+      }
     },
     goHome() {
       this.$router.push("/welcome");

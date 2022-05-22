@@ -14,6 +14,24 @@ import store from './store'
 
 const app = createApp(App);
 
+// 全局指令
+app.directive('has', {
+  beforeMount: (el, binding) => {
+    // console.log(el, binding);
+    // 获取按钮权限
+    let actionList = storage.getItem("actionList")
+    let value = binding.value;
+    // 盘点列表中是否有对应按钮权限标识
+    let hasPermission = actionList.includes(value)
+    if (!hasPermission) {
+      el.style = 'display:none';
+      setTimeout(() => {
+        el.parentNode.removeChild(el);
+      }, 0);
+    }
+  }
+})
+
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
