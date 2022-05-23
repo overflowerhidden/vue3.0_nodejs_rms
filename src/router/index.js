@@ -114,7 +114,8 @@ function checkPermission(path) {
 }
 
 router.beforeEach((to, from, next) => {
-  if (checkPermission(to.path)) {
+  // if (checkPermission(to.path)) {
+  if (router.hasRoute(to.name)) {
     document.title = to.meta.title
     next()
   } else {
