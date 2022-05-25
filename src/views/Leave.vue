@@ -34,8 +34,14 @@
         </el-table-column>
         <el-table-column label="操作" width="150">
           <template #default="scope">
-            <el-button @click="handleEdit(scope.row)">查看</el-button>
-            <el-button type="danger">作废</el-button>
+            <el-button @click="handleDetail(scope.row)">查看</el-button>
+            <el-button
+              type="danger"
+              @click="handleDelete(scope.row._id)"
+              v-if="[1, 2].includes(scope.row.applyState)"
+            >
+              作废
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -102,6 +108,52 @@
       <span class="dialog-footer">
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary" @click="handleSubmit">确 定</el-button>
+      </span>
+    </template>
+  </el-dialog>
+
+  <el-dialog
+    title="申请休假详情"
+    width="50%"
+    v-model="showDetailModal"
+    destroy-on-close
+  >
+    <el-steps
+      :active="detail.applyState > 2 ? 3 : detail.applyState"
+      align-center
+    >
+      <el-step title="待审批"></el-step>
+      <el-step title="审批中"></el-step>
+      <el-step title="审批通过/审批拒绝"></el-step>
+    </el-steps>
+    <el-form
+      ref="dialogFormInfo"
+      :model="leaveForm"
+      label-width="120px"
+      :rules="rules"
+    >
+      <el-form-item label="休假类型">
+        <span>{{ detail.applyTypeName }}</span>
+      </el-form-item>
+      <el-form-item label="休假时间">
+        <span>{{ detail.time }}</span>
+      </el-form-item>
+      <el-form-item label="休假时长">
+        {{ detail.leaveTime }}
+      </el-form-item>
+      <el-form-item label="休假原因">
+        <span>{{ detail.reasons }}</span>
+      </el-form-item>
+      <el-form-item label="审批状态">
+        <span>{{ detail.applyStateName }}</span>
+      </el-form-item>
+      <el-form-item label="审批人">
+        <span>{{ detail.curAuditUserName }}</span>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="showDetailModal = false">关 闭</el-button>
       </span>
     </template>
   </el-dialog>
@@ -223,6 +275,8 @@ export default {
 
     const action = ref("create");
     const showModal = ref(false);
+    const showDetailModal = ref(false);
+    const detail = ref({});
     // 创建休假弹框表单
     const leaveForm = reactive({
       applyType: 1,
@@ -247,7 +301,36 @@ export default {
     };
 
     const handleQuery = () => {};
-    const handleEdit = (row) => {};
+    const handleDetail = (row) => {
+      let data = { ...row };
+      data.applyTypeName = {
+        1: "事假",
+        2: "调休",
+        3: "年假",
+      }[data.applyType];
+      data.time =
+        utils.formateDate(new Date(row.startTime), "yyyy-MM-dd") +
+        " 到 " +
+        utils.formateDate(new Date(row.endTime), "yyyy-MM-dd");
+      data.applyStateName = {
+        1: "待审批",
+        2: "审批中",
+        3: "审批拒绝",
+        4: "审批通过",
+        5: "待审批",
+      }[data.applyState];
+      detail.value = data;
+      console.log(data);
+      showDetailModal.value = true;
+    };
+    const handleDelete = async (_id) => {
+      try {
+        let params = { _id, action: "delete" };
+        await proxy.$api.leaveSubmit(params);
+        proxy.$message.success("操作成功");
+        getApplyList();
+      } catch (error) {}
+    };
     const handleDateChange = (key, val) => {
       let { startTime, endTime } = leaveForm;
       if (!startTime || !endTime) return;
@@ -272,6 +355,7 @@ export default {
           await proxy.$api.leaveSubmit(params);
           proxy.$message.success("操作成功");
           handleClose();
+          getApplyList();
         }
       });
     };
@@ -291,13 +375,16 @@ export default {
       rules,
       showModal,
       leaveForm,
+      showDetailModal,
+      detail,
       handleReset,
       handleQuery,
-      handleEdit,
       handleApply,
       handleSubmit,
       handleClose,
       handleDateChange,
+      handleDelete,
+      handleDetail,
     };
   },
 };
