@@ -77,7 +77,6 @@ export default {
         try {
           const { menuList } = await this.$api.getPermissionList();
           let routes = utils.generateRoute(menuList);
-          console.log(routes);
           routes.map((route) => {
             let url = `./../views/${route.component}.vue`;
             route.component = defineAsyncComponent(() =>

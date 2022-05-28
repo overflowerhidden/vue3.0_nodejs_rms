@@ -33,6 +33,7 @@
             :is-dot="noticeCount > 0 ? true : false"
             class="notice"
             type="danger"
+            @click="handleNotice"
           >
             <el-icon class="el-input__icon"><bell /></el-icon>
           </el-badge>
@@ -69,16 +70,25 @@ export default {
     return {
       isCollapse: false,
       userInfo: this.$store.state.userInfo || {},
-      noticeCount: 0,
       userMenu: [],
       activeMenu: location.hash.slice(1),
     };
+  },
+  computed: {
+    noticeCount() {
+      return this.$store.state.noticeCount;
+    },
   },
   mounted() {
     this.getNoticeCount();
     this.getMenuList();
   },
   methods: {
+    handleNotice() {
+      if (this.noticeCount > 0) {
+        this.$router.push("/audit/approve");
+      }
+    },
     toggle() {
       this.isCollapse = !this.isCollapse;
     },
@@ -91,7 +101,7 @@ export default {
     async getNoticeCount() {
       try {
         const count = await this.$api.noticeCount();
-        this.noticeCount = count;
+        this.$store.commit("saveNoticeCount", count);
       } catch (error) {
         console.error(error);
       }
@@ -175,6 +185,7 @@ export default {
         .notice {
           line-height: 30px;
           margin-right: 15px;
+          cursor: pointer;
         }
         .user-link {
           cursor: pointer;

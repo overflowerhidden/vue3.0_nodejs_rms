@@ -9,11 +9,15 @@ export default {
     storage.setItem('userInfo', userInfo)
   },
   saveUserMenu(state, menuList) {
-    state.userInfo = menuList;
+    state.menuList = menuList;
     storage.setItem('menuList', menuList)
   },
   saveUserAction(state, actionList) {
-    state.userInfo = actionList;
+    state.actionList = actionList;
     storage.setItem('actionList', actionList)
+  },
+  saveNoticeCount(state, noticeCount) {
+    state.noticeCount = noticeCount;
+    storage.setItem('noticeCount', noticeCount)
   },
 }

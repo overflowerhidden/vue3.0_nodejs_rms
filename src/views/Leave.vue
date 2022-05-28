@@ -324,7 +324,6 @@ export default {
         5: "待审批",
       }[data.applyState];
       detail.value = data;
-      console.log(data);
       showDetailModal.value = true;
     };
     const handleDelete = async (_id) => {

@@ -212,7 +212,7 @@ export default {
         },
       },
     ]);
-    const userInfo = ref({});
+    const userInfo = proxy.$store.state.userInfo;
     const showDetailModal = ref(false);
     // 详情弹框对象
     const detail = ref({});
@@ -223,7 +223,6 @@ export default {
     });
 
     onMounted(async () => {
-      userInfo.value = proxy.$store.state.userInfo;
       await getApplyList();
     });
 
@@ -276,6 +275,10 @@ export default {
             proxy.$message.success("处理成功");
             handleClose();
             getApplyList();
+            proxy.$store.commit(
+              "saveNoticeCount",
+              proxy.$store.state.noticeCount - 1
+            );
           } catch (error) {}
         }
       });
