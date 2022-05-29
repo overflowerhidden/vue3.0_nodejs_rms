@@ -1,7 +1,8 @@
 <template>
   <div class="user-manage">
     <div class="query-form">
-      <el-form ref="form" :inline="true" :model="user">
+      <query-form :form="form" v-model="user" @handleQuery="handleQuery" />
+      <!-- <el-form ref="form" :inline="true" :model="user">
         <el-form-item label="用户ID" prop="userId">
           <el-input v-model="user.userId" placeholder="请输入用户ID" />
         </el-form-item>
@@ -20,9 +21,9 @@
           <el-button type="primary" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset('form')">重置</el-button>
         </el-form-item>
-      </el-form>
+      </el-form> -->
     </div>
-    <div class="base-table">
+    <!-- <div class="base-table">
       <div class="action">
         <el-button
           type="primary"
@@ -71,7 +72,33 @@
         :page-size="pager.pageSize"
         @current-change="handleCurrentChange"
       />
-    </div>
+    </div> -->
+
+    <base-table
+      :columns="columns"
+      :data="userList"
+      :pager="pager"
+      @selection-change="handleSelectionChange"
+      @handleAction="handleAction"
+      @handleCurrentChange="handleCurrentChange"
+    >
+      <template v-slot:action>
+        <el-button
+          type="primary"
+          @click="handleCreate"
+          v-has:add="'user-create'"
+        >
+          新增
+        </el-button>
+        <el-button
+          type="danger"
+          @click="handlePatchDel"
+          v-has:add="'user-patch-delete'"
+        >
+          批量删除
+        </el-button>
+      </template>
+    </base-table>
     <el-dialog
       title="用户新增"
       v-model="showModal"
@@ -159,7 +186,7 @@ export default {
     // 获取Composition API 上下文对象
     const { ctx, proxy } = getCurrentInstance();
     // 初始化用户表单对象
-    const user = reactive({
+    const user = ref({
       state: 1,
     });
     // 初始化用户列表数据
@@ -177,6 +204,32 @@ export default {
     const userForm = reactive({
       state: 3,
     });
+    const form = [
+      {
+        type: "input",
+        label: "用户ID",
+        model: "userId",
+        placeholder: "请输入用户ID",
+      },
+      {
+        type: "input",
+        label: "用户名称",
+        model: "userName",
+        placeholder: "请输入用户名称",
+      },
+      {
+        type: "select",
+        label: "状态",
+        model: "state",
+        placeholder: "请选择状态",
+        options: [
+          { label: "所有", value: 0, disabled: false },
+          { label: "在职", value: 1 },
+          { label: "离职", value: 2 },
+          { label: "试用期", value: 3 },
+        ],
+      },
+    ];
     // 所有角色列表
     const roleList = ref([]);
     // 所有部门列表
@@ -212,6 +265,9 @@ export default {
     });
     // 定义动态表格-格式
     const columns = reactive([
+      {
+        type: "selection",
+      },
       {
         label: "用户ID",
         prop: "userId",
@@ -261,6 +317,23 @@ export default {
           return utils.formateDate(new Date(value));
         },
       },
+      {
+        type: "action",
+        label: "操作",
+        width: 150,
+        list: [
+          {
+            type: "primary",
+            text: "编辑",
+            visible: true, // 控制按钮显示/隐藏
+          },
+          {
+            type: "danger",
+            text: "删除",
+            visible: true, // 控制按钮显示/隐藏
+          },
+        ],
+      },
     ]);
 
     onMounted(() => {
@@ -271,7 +344,7 @@ export default {
 
     // 获取用户列表
     const getUserList = async () => {
-      let params = { ...user, ...pager };
+      let params = { ...user.value, ...pager };
       try {
         const { list, page } = await proxy.$api.getUserList(params);
         userList.value = list;
@@ -279,7 +352,8 @@ export default {
       } catch (error) {}
     };
     // 查询事件，获取用户列表
-    const handleQuery = () => {
+    const handleQuery = (values) => {
+      // console.log(values, user.value);
       getUserList();
     };
     // 重置查询表单
@@ -358,6 +432,13 @@ export default {
         }
       });
     };
+    const handleAction = ({ index, row }) => {
+      if (index == 0) {
+        handleEdit(row);
+      } else if (index == 1) {
+        handleDel(row);
+      }
+    };
     // 用户编辑
     const handleEdit = (row) => {
       action.value = "edit";
@@ -367,6 +448,7 @@ export default {
       });
     };
     return {
+      form,
       user,
       pager,
       userList,
@@ -391,6 +473,7 @@ export default {
       handleClose,
       handleSubmit,
       handleEdit,
+      handleAction,
     };
   },
 };
